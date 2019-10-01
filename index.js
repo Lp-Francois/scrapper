@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 require('dotenv/config')
 const Product = require('./models/Product')
 
+const url = 'https://amazon.com/s?k='
+const keywords = ['garden', 'star-wars', 'tshirt', 'pants', 'drink']
+
 mongoose.connect(
 	process.env.DB_CONNECTION, 
 	{
@@ -11,63 +14,49 @@ mongoose.connect(
 	}
 );
 
+const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
-const keywords = ['garden', 'star-wars', 'tshirt', 'pants', 'drink']
-let keyword = keywords[Math.floor(Math.random()*keywords.length)];
-
-let url = 'https://amazon.com/s?k='+keyword+'&page=';
-
-(async () => {
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-
-	//for (let i = 1; i >= 3; i++) {}
-	let i =1
-	
-	try {
-		let pageURL = url+i
-		await page.goto(pageURL);
-		console.log(`${pageURL} opened`);
-	}catch(err){
-		console.log(err);
-	}
-
-	const products = await page.evaluate(() => {
-		const grabInfo = (bloc, selector) => bloc
-			.querySelector(selector)
-			.innerText
-			.trim()
-
-		const data = []
-
-		const productBlocs = document.querySelectorAll('.s-result-item')
-
-		for(let p of productBlocs){
-			data.push({
-				title: grabInfo(p, 'h2')
-			})
-		}
-
-		return data
-	})
-
-	
-	console.log(products)
-
-	/*
+const sendDataToDB = async (products) => {
 	for(let p of products){
 		const product = new Product({
-			title: p.title
+			title: p.title.replace('\\',"")
 		})
-		try {
-			const savedProduct = await product.save();
-		}catch(err){
-			console.log(err);
-		}
+		const savedProduct = await product.save();
 	}
-	console.log("added to DB")
-	*/
+}
+
+const scrapper = async () => {
+
+	const browser = await puppeteer.launch()
+	const page = await browser.newPage()
+
+	for (let i = 1; i < 4; i++) {
+
+		let pageURL = url + chooseRandom(keywords) +'&page='+i
+		
+		await page.goto(pageURL)
+		
+		const products = await page.evaluate(() => {
+			let data = []
+
+			const productBlocs = document.querySelectorAll('.s-result-item')
+
+			for(let p of productBlocs){
+				data.push({
+					title: p.querySelector('h2').innerText.trim()
+				})
+			}
+			return data
+		})
+
+		await sendDataToDB(products)
+
+		console.log(products)
+
+	}
 
 	await browser.close()
-})();
+	process.exit()
+};
 
+scrapper()
