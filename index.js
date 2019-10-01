@@ -17,12 +17,20 @@ mongoose.connect(
 const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
 const sendDataToDB = async (products) => {
+	/*
 	for(let p of products){
 		const product = new Product({
 			title: p.title.replace('\\',"")
 		})
-		const savedProduct = await product.save();
+		const savedProduct = await product.save()
 	}
+	*/
+
+	products.forEach( async (p) => {
+		await new Product({
+			title: p.title.replace('\\',"")
+		}).save()
+	})
 }
 
 const scrapper = async () => {
@@ -32,15 +40,15 @@ const scrapper = async () => {
 
 	for (let i = 1; i < 4; i++) {
 
-		let pageURL = url + chooseRandom(keywords) +'&page='+i
+		let pageURL = url + chooseRandom(keywords) + '&page=' + i
 		
 		await page.goto(pageURL)
 		
 		const products = await page.evaluate(() => {
-			let data = []
-
+	
 			const productBlocs = document.querySelectorAll('.s-result-item')
-
+			let data = []
+			
 			for(let p of productBlocs){
 				data.push({
 					title: p.querySelector('h2').innerText.trim()
