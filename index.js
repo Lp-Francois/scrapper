@@ -25,6 +25,12 @@ const sendDataToDB = async (products) => {
 	})
 }
 
+const fetchDate = async (url) => {
+	await page.goto(url)
+
+
+}
+
 const scrapper = async () => {
 
 	const titleSelector = 'h2'
@@ -57,6 +63,10 @@ const scrapper = async () => {
 			let data = []
 
 			for(let p of productBlocs){
+				const titleSelector = 'h1 > #productTitle';
+				await page.waitForSelector(titleSelector);
+				const title = await page.$eval(titleSelector, titleSelector => titleSelector.innerHTML.trim());
+
 				const price = p.querySelector('.a-price .a-offscreen')
 				let productPrice = price ? price.innerText : null
 
