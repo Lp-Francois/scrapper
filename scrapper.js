@@ -62,7 +62,7 @@ const scrapper = async () => {
 
 			for(let p of productBlocs){
 				const title = p.querySelector('h2')
-				let productTitle = title ? title.innerText.trim().replace('\\',"") : null
+				let productTitle = title ? title.innerText.trim().replace('\\','') : null
 
 				const price = p.querySelector('.a-price .a-offscreen')
 				let productPrice = price ? price.innerText : null
