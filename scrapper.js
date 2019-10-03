@@ -8,8 +8,6 @@ const keywords = ['shoes', 'plant', 'tshirt', 'pants', 'hat']
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 
-
-
 const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
 const sendDataToDB = async (products) => {
@@ -98,16 +96,13 @@ const scrapper = async () => {
 			return data
 		})
 
-		//fetch the "Date first listed" in each product page.
+		// Fetch the "Date first listed" in each product page.
 		for(p of products) {
 			if(p.url){
 				try {
 					await page.goto(p.url)
-					//console.log(p.url)
 
-					const dateSelector = '#descriptionAndDetails'
-					
-					//product pages may vary, the scrapping of the date differs for each page.
+					// Product pages may vary, the scrapping of the date differs for each page.
 					const typeofPage = await page.evaluate( async (page) => {
 						if(document.querySelector('#descriptionAndDetails')){ return 'normalPage' }
 						else if(document.querySelector('#product-details-grid')){ return 'pageWithDetails' }
@@ -115,7 +110,7 @@ const scrapper = async () => {
 					})
 					
 					if(typeofPage == "normalPage"){
-						let dateSelector = '#descriptionAndDetails'
+						const dateSelector = '#descriptionAndDetails'
 						const description = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
 
 						let date = description
@@ -126,17 +121,17 @@ const scrapper = async () => {
 						.trim()
 
 						const month = date.split(' ').shift()
-
 						p.dateFirstListed = (months.includes(month)) ? date : null
 
-					}else if (typeofPage == "pageWithDetails") {
-						let dateSelector = '#product-details-grid'
+					} else if (typeofPage == "pageWithDetails") {
+						const dateSelector = '#product-details-grid'
 						const detail = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
-						let date = detail
-						.split("Date First Available")
-						.pop()
-						p.dateFirstListed = date
-					}		
+						p.dateFirstListed = detail.split("Date First Available").pop()
+						//
+						console.log(detail.split("Date First Available").pop())
+					} else {
+						p.dateFirstListed = null
+					}
 
 				} catch(e) {
 					console.log(e)
@@ -146,8 +141,8 @@ const scrapper = async () => {
 
 		await sendDataToDB(products)
 
-		console.log(products)
-
+		console.log(`[+] Send page-${i} to database`)
+		//console.log(products)
 	}
 
 	await browser.close()
