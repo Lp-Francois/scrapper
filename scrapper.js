@@ -10,13 +10,15 @@ const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
 const sendDataToDB = async (products) => {
 	products.forEach( async (p) => {
-		await new Product({
-			title: p.title,
-			price: p.price,
-			numberOfReviews: p.numberOfReviews,
-			avgRating: p.avgRating,
-			dateFirstListed: p.dateFirstListed
-		}).save()
+		if(p.title){
+			await new Product({
+				title: p.title,
+				price: p.price,
+				numberOfReviews: p.numberOfReviews,
+				avgRating: p.avgRating,
+				dateFirstListed: p.dateFirstListed
+			}).save()
+		}
 	})
 }
 
@@ -95,6 +97,7 @@ const scrapper = async () => {
 				try {
 					await page.goto(p.url)
 					const dateSelector = '#descriptionAndDetails'
+
 					await page.waitForSelector(dateSelector)
 
 					const description = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
