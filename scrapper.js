@@ -5,6 +5,8 @@ const Product = require('./models/Product')
 const url = 'https://amazon.com/s?k='
 const keywords = ['shoes', 'plant', 'tshirt', 'pants', 'hat']
 
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
 
 const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
@@ -91,24 +93,30 @@ const scrapper = async () => {
 			return data
 		})
 
-		//fetch the date in each product page.
+		//fetch the "Date first listed" in each product page.
 		for(p of products) {
 			if(p.url){
 				try {
 					await page.goto(p.url)
+					console.log(p.url)
+
 					const dateSelector = '#descriptionAndDetails'
 
-					await page.waitForSelector(dateSelector)
+					//await page.waitForSelector(dateSelector)
 
 					const description = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
 
-					const date = description
+					let date = description
 					.split("Date first listed on Amazon:")
 					.pop()
 					.split("\n")
 					.shift()
 					.trim()
-					p.dateFirstListed = date
+
+					const month = date.split(' ').shift()
+
+					p.dateFirstListed = (months.includes(month)) ? date : null
+
 				} catch(e) {
 					console.log(e)
 				}
