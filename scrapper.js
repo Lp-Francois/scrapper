@@ -45,8 +45,7 @@ const scrapper = async () => {
 
 	for (let i = 1; i < 4; i++) {
 
-		//TODO chooseRandom(keywords)
-		let pageURL = url + 'shoes' + '&page=' + i
+		let pageURL = url + chooseRandom(keywords) + '&page=' + i
 		
 		await page.goto(pageURL)
 
