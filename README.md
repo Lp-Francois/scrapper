@@ -10,7 +10,7 @@ To run this web scrapper, you need to have [Nodejs](https://nodejs.org/en/) and 
 
 1. MongoDB
 
-The scrapped is intented to send the scrapped data to a mongoDB database. Change the `.env.example` file to `.env` and adapt the URL to your needs (username, password, domain name, port, database name).
+The scrapper is intented to send the scrapped data to a mongoDB database. Change the `.env.example` file to `.env` and adapt the URL to your needs (username, password, domain name, port, database name).
 
 The url is following this scheme : `mongodb://USERNAME:PASSWORD@DOMAIN_NAME:PORT/DB_NAME`
 

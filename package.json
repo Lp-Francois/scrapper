@@ -4,6 +4,7 @@
   "description": "Use Puppeteer by Google to build a simple web crawler.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "jest"
   },
   "author": "François",

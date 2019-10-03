@@ -37,7 +37,10 @@ const scrapper = async () => {
 	const numberOfReviewsSelector = '.s-result-item span a.a-link-normal span.a-size-base'
 	const avgRatingSelector = '.a-section .a-icon-star-small'
 
-	const browser = await puppeteer.launch()
+	const browser = await puppeteer.launch({
+		headless: true,
+		args: ['--no-sandbox', '--disable-setuid-sandbox']
+	})
 	const page = await browser.newPage()
 
 	for (let i = 1; i < 4; i++) {
