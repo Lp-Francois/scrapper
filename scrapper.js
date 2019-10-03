@@ -8,6 +8,8 @@ const keywords = ['shoes', 'plant', 'tshirt', 'pants', 'hat']
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 
+
+
 const chooseRandom = (words) => words[Math.floor(Math.random()*words.length)]
 
 const sendDataToDB = async (products) => {
@@ -67,6 +69,9 @@ const scrapper = async () => {
 			let data = []
 
 			for(let p of productBlocs){
+
+				if(p.innerText.includes("Prime Video")){ continue }
+
 				const title = p.querySelector('h2')
 				let productTitle = title ? title.innerText.trim().replace('\\','') : null
 
@@ -98,24 +103,40 @@ const scrapper = async () => {
 			if(p.url){
 				try {
 					await page.goto(p.url)
-					console.log(p.url)
+					//console.log(p.url)
 
 					const dateSelector = '#descriptionAndDetails'
+					
+					//product pages may vary, the scrapping of the date differs for each page.
+					const typeofPage = await page.evaluate( async (page) => {
+						if(document.querySelector('#descriptionAndDetails')){ return 'normalPage' }
+						else if(document.querySelector('#product-details-grid')){ return 'pageWithDetails' }
+						else { return false}
+					})
+					
+					if(typeofPage == "normalPage"){
+						let dateSelector = '#descriptionAndDetails'
+						const description = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
 
-					//await page.waitForSelector(dateSelector)
+						let date = description
+						.split("Date first listed on Amazon:")
+						.pop()
+						.split("\n")
+						.shift()
+						.trim()
 
-					const description = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
+						const month = date.split(' ').shift()
 
-					let date = description
-					.split("Date first listed on Amazon:")
-					.pop()
-					.split("\n")
-					.shift()
-					.trim()
+						p.dateFirstListed = (months.includes(month)) ? date : null
 
-					const month = date.split(' ').shift()
-
-					p.dateFirstListed = (months.includes(month)) ? date : null
+					}else if (typeofPage == "pageWithDetails") {
+						let dateSelector = '#product-details-grid'
+						const detail = await page.$eval(dateSelector, dateSelector => dateSelector.innerText)
+						let date = detail
+						.split("Date First Available")
+						.pop()
+						p.dateFirstListed = date
+					}		
 
 				} catch(e) {
 					console.log(e)

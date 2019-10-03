@@ -26,5 +26,11 @@ npm install
 	
 To run the scrapper:
 ```
-node index.js
+npm start
 ```
+
+## Errors handling
+
+Sometimes, Amazon does not provide what we want, like the "date first listed" for a product ([example here](https://www.amazon.com/Compression-Protective-Basketball-Volleyball-Training-Adult/dp/B07TT31684/ref=sr_1_65?dchild=1&keywords=t-shirt&qid=1570119227&s=gateway&sr=8-65%27)).
+
+By default, it is replaced with `null` in the database.

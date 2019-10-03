@@ -1,6 +1,6 @@
 describe('Group', function(){
 
-	test('test super important', function(){
+	test('first useless test', function(){
 		const a = 2 + 2
 		expect(a).toBe(4)
 	})
