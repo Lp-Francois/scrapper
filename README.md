@@ -16,7 +16,7 @@ The url is following this scheme : `mongodb://USERNAME:PASSWORD@DOMAIN_NAME:PORT
 
 2. Install dependencies
 
-This command will install required dependencies (puppeteer, etc).
+This command will install required dependencies (puppeteer, mongoose, etc).
 
 ```
 npm install

@@ -29,13 +29,8 @@ const articleUrl = async () => {
 	return await page.$$eval(linkSelector, (links) => links.map(link => link.href));
 }
 
-const fetchDate = async (url) => {
-	await page.goto(url)
-	console.log(url)
-}
-
 const scrapper = async () => {
-
+	
 	const titleSelector = 'h2'
 	const priceSelector = '.a-price .a-offscreen'
 	const numberOfReviewsSelector = '.s-result-item span a.a-link-normal span.a-size-base'
@@ -52,7 +47,6 @@ const scrapper = async () => {
 		let pageURL = url + chooseRandom(keywords) + '&page=' + i
 		
 		await page.goto(pageURL)
-
 
 		await Promise.all([
 				page.waitForSelector(titleSelector),
@@ -140,9 +134,7 @@ const scrapper = async () => {
 		}
 
 		await sendDataToDB(products)
-
-		console.log(`[+] Send page-${i} to database`)
-		//console.log(products)
+		console.log(`[+] Products of page-${i} has been sent to database!`)
 	}
 
 	await browser.close()
